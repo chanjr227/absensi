@@ -34,7 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html>
 
 <head>
-    <title>Login</title>
+    <title>Login - Sistem Absensi</title>
+    <link rel="stylesheet" href="../assets/css/login.css">
 </head>
 
 <body>
