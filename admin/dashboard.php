@@ -47,7 +47,7 @@ $dataAbsensi = $stmt->get_result();
 </head>
 
 <body>
-    <h1>Dashboard </h1>
+    <h1>Dashboard admin</h1>
     <p>Halo, <?= htmlspecialchars($_SESSION['username']) ?>!</p>
 
     <div class="card-container">
