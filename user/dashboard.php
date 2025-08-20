@@ -34,7 +34,7 @@ $absenHariIni = $stmt->get_result()->fetch_assoc();
         <form action="checkout.php" method="POST" enctype="multipart/form-data" onsubmit="return ambilFoto()">
             <div id="kamera"></div>
             <input type="hidden" name="image_data" id="image_data">
-            <button type="submit">⏹️ Check Out</button>
+            <button type="submit">⏹️ Check out</button>
         </form>
 
     <?php else: ?>
