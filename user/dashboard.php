@@ -38,7 +38,7 @@ $absenHariIni = $stmt->get_result()->fetch_assoc();
         </form>
 
     <?php else: ?>
-        <p>✅ Kamu sudah check-in & check-out hari ini.</p>
+        <p>✅ Anda sudah check-in & check-out hari ini.</p>
     <?php endif; ?>
 
     <a href="../auth/logout.php">Logout</a>
