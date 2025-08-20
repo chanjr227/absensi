@@ -61,7 +61,7 @@ $dataAbsensi = $stmt->get_result();
 
     <hr>
 
-    <h2>Rekap Absensi</h2>
+    <h2>Rekap Absen</h2>
 
     <form method="GET">
         <label>Tanggal Awal:</label>
