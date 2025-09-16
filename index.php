@@ -1,61 +1,82 @@
 <?php
-require '../auth/session_check.php';
-require '../config/db.php';
+require 'config/db.php';
 
-$userId = $_SESSION['user_id'];
 $tanggalHariIni = date('Y-m-d');
-
-// Ambil data absensi hari ini
-$stmt = $koneksi->prepare("SELECT * FROM absensi WHERE user_id = ? AND tanggal = ?");
-$stmt->bind_param("is", $userId, $tanggalHariIni);
-$stmt->execute();
-$absenHariIni = $stmt->get_result()->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="id">
 
 <head>
-    <title>Dashboard user</title>
-    <script src="webcam.js"></script>
+    <meta charset="UTF-8">
+    <title>Absensi Tanpa Login</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            width: 350px;
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+        }
+
+        button {
+            background: #38bdf8;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #0ea5e9;
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 
 <body>
-    <h2>Halo, <?= htmlspecialchars($_SESSION['username']) ?> (<?= $_SESSION['role'] ?>)</h2>
-    <p>Tanggal: <?= date('d-m-Y') ?> | Jam: <span id="jam"></span></p>
+    <div class="card">
+        <h2>Absensi Hari Ini</h2>
+        <p><?= date('d-m-Y') ?> | Jam: <span id="jam"></span></p>
 
-    <?php if (!$absenHariIni): ?>
-        <form action="checkin.php" method="POST" enctype="multipart/form-data" onsubmit="return ambilFoto()">
+        <form action="checkin.php" method="POST" onsubmit="return ambilFoto()">
+            <input type="text" name="nama_karyawan" placeholder="Masukkan Nama / NIK" required>
             <div id="kamera"></div>
             <input type="hidden" name="image_data" id="image_data">
-            <button type="submit">✅ Check In</button>
+            <button type="submit">✅ Absen</button>
         </form>
-    <?php elseif ($absenHariIni && !$absenHariIni['jam_keluar']): ?>
-        <form action="checkout.php" method="POST" enctype="multipart/form-data" onsubmit="return ambilFoto()">
-            <div id="kamera"></div>
-            <input type="hidden" name="image_data" id="image_data">
-            <button type="submit">⏹️ Check out</button>
-        </form>
-
-    <?php else: ?>
-        <p>✅ Anda sudah check-in & check-out hari ini.</p>
-    <?php endif; ?>
-
-    <a href="../auth/logout.php">Logout</a>
+    </div>
 
     <script>
-        // Jam realtime
         setInterval(() => {
-            const now = new Date();
-            document.getElementById("jam").innerText = now.toLocaleTimeString();
+            document.getElementById("jam").innerText = new Date().toLocaleTimeString();
         }, 1000);
-    </script>
 
-    <!-- Library WebcamJS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
-
-    <!-- Inisialisasi Kamera -->
-    <script>
         Webcam.set({
             width: 320,
             height: 240,
@@ -71,24 +92,6 @@ $absenHariIni = $stmt->get_result()->fetch_assoc();
             return true;
         }
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
-    <script>
-        Webcam.set({
-            width: 320,
-            height: 240,
-            image_format: 'png',
-            png_quality: 90
-        });
-        Webcam.attach('#kamera');
-
-        function ambilFoto() {
-            Webcam.snap(function(data_uri) {
-                document.getElementById('image_data').value = data_uri;
-            });
-            return true;
-        }
-    </script>
-
 </body>
 
 </html>
