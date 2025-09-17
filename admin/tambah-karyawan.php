@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Tambah Karyawan</title>
-    <link rel="stylesheet" href="../assets/css/dashboard-admin.css">
+    <link rel="stylesheet" href="../assets/css/admin_dashboard.css">
 </head>
 
 <body>
