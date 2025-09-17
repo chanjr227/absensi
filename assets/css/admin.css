@@ -1,0 +1,72 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f1f5f9;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 30px;
+}
+
+.container {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 700px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+th {
+  background: #0ea5e9;
+  color: white;
+}
+
+.btn {
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  margin: 2px;
+}
+
+.btn-tambah {
+  background: #38bdf8;
+  color: white;
+}
+.btn-edit {
+  background: #facc15;
+  color: black;
+}
+.btn-hapus {
+  background: #ef4444;
+  color: white;
+}
+.btn-back {
+  background: #94a3b8;
+  color: white;
+}
+.btn-simpan {
+  background: #22c55e;
+  color: white;
+}
+
+.btn:hover {
+  opacity: 0.85;
+  transform: scale(1.03);
+}
