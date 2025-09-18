@@ -16,7 +16,7 @@ $result = $koneksi->query("SELECT * FROM users ORDER BY id ASC");
 
 <body>
     <div class="container">
-        <h1>👨‍💼 Data Karyawan</h1>
+        <h1>Data Karyawan</h1>
         <a href="tambah-karyawan.php" class="btn btn-tambah">+ Tambah Karyawan</a>
         <table>
             <thead>

@@ -15,9 +15,9 @@ $result = $koneksi->query("SELECT * FROM users ORDER BY id ASC");
 
 <body>
     <div class="sidebar">
-        <h2>📊 Admin</h2>
-        <a href="dashboard.php">🏠 Dashboard</a>
-        <a href="data-karyawan.php" style="background:#1e293b;">👥 Data Karyawan</a>
+        <h2>Admin</h2>
+        <a href="dashboard.php">Dashboard</a>
+        <a href="data-karyawan.php" style="background:#1e293b;"> Data Karyawan</a>
         <a href="laporan.php">📑 Laporan</a>
     </div>
 
