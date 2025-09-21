@@ -8,8 +8,10 @@ $tanggalHariIni = date('Y-m-d');
 
 <head>
     <meta charset="UTF-8">
-    <title>Absensi Tanpa Login</title>
+    <title>Absensi Dengan Face Detection</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
+    <!-- Pastikan face-api.js dimuat lebih dulu -->
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -57,6 +59,13 @@ $tanggalHariIni = date('Y-m-d');
             transform: translateY(-2px);
         }
 
+        canvas {
+            position: absolute;
+            top: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
         .alert {
             padding: 10px;
             border-radius: 8px;
@@ -70,21 +79,6 @@ $tanggalHariIni = date('Y-m-d');
 
         .error {
             background: #ef4444;
-        }
-
-        @keyframes fadeOut {
-            0% {
-                opacity: 1;
-            }
-
-            70% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0;
-                display: none;
-            }
         }
     </style>
 </head>
@@ -103,16 +97,19 @@ $tanggalHariIni = date('Y-m-d');
         <form action="user/checkin.php" method="POST" onsubmit="return ambilFoto()">
             <input type="number" name="user_id" placeholder="Masukkan User ID / NIK" required>
             <div id="kamera"></div>
+            <canvas id="overlay"></canvas>
             <input type="hidden" name="image_data" id="image_data">
-            <button type="submit">✅ Check In</button>
+            <button type="submit" id="btnAbsen" disabled>✅ Check In</button>
         </form>
     </div>
 
     <script>
+        // Jam real-time
         setInterval(() => {
             document.getElementById("jam").innerText = new Date().toLocaleTimeString();
         }, 1000);
 
+        // Setup webcam
         Webcam.set({
             width: 320,
             height: 240,
@@ -120,6 +117,45 @@ $tanggalHariIni = date('Y-m-d');
             png_quality: 90
         });
         Webcam.attach('#kamera');
+
+        const overlay = document.getElementById('overlay');
+        const ctx = overlay.getContext('2d');
+
+        console.log("⏳ Memuat model face-api.js...");
+        Promise.all([
+                faceapi.nets.ssdMobilenetv1.loadFromUri("https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights"),
+                faceapi.nets.faceLandmark68Net.loadFromUri("https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights"),
+                faceapi.nets.faceRecognitionNet.loadFromUri("https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights")
+            ])
+            .then(() => {
+                console.log("✅ Model berhasil dimuat! Menunggu video siap...");
+                // Tambahkan delay 1.5 detik supaya webcam benar-benar siap
+                setTimeout(startFaceDetection, 1500);
+            })
+            .catch(err => console.error("❌ Gagal memuat model:", err));
+
+        async function startFaceDetection() {
+            console.log("▶ Mulai deteksi wajah...");
+            const videoElement = document.querySelector('#kamera video');
+            if (!videoElement) {
+                console.error("❌ Video element tidak ditemukan!");
+                return;
+            }
+
+            overlay.width = 320;
+            overlay.height = 240;
+
+            setInterval(async () => {
+                const detections = await faceapi.detectAllFaces(videoElement).withFaceLandmarks();
+                ctx.clearRect(0, 0, overlay.width, overlay.height);
+                faceapi.draw.drawDetections(overlay, detections);
+
+                if (detections.length > 0) {
+                    console.log("✅ Wajah terdeteksi");
+                }
+                document.getElementById('btnAbsen').disabled = detections.length === 0;
+            }, 500);
+        }
 
         function ambilFoto() {
             Webcam.snap(function(data_uri) {
