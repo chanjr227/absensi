@@ -14,6 +14,30 @@ $total_absen    = $koneksi->query("SELECT COUNT(*) as total FROM absensi WHERE D
 
 // Ambil data karyawan
 $result = $koneksi->query("SELECT * FROM users ORDER BY id ASC");
+
+// Ambil data absensi per bulan (untuk grafik batang)
+$absensi_per_bulan = $koneksi->query("
+    SELECT MONTH(tanggal) as bulan,
+           SUM(CASE WHEN status='hadir' THEN 1 ELSE 0 END) as hadir,
+           SUM(CASE WHEN status='izin' THEN 1 ELSE 0 END) as izin,
+           SUM(CASE WHEN status='sakit' THEN 1 ELSE 0 END) as sakit
+    FROM absensi
+    WHERE YEAR(tanggal)=YEAR(CURDATE())
+    GROUP BY MONTH(tanggal)
+    ORDER BY bulan ASC
+");
+
+$bulan = [];
+$hadir = [];
+$izin = [];
+$sakit = [];
+
+while ($row = $absensi_per_bulan->fetch_assoc()) {
+    $bulan[] = date("M", mktime(0, 0, 0, $row['bulan'], 1));
+    $hadir[] = $row['hadir'];
+    $izin[] = $row['izin'];
+    $sakit[] = $row['sakit'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -23,6 +47,7 @@ $result = $koneksi->query("SELECT * FROM users ORDER BY id ASC");
     <meta charset="UTF-8">
     <title>Dashboard Admin</title>
     <link rel="stylesheet" href="../assets/css/admin_dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -55,6 +80,10 @@ $result = $koneksi->query("SELECT * FROM users ORDER BY id ASC");
                     <p>Absensi Hari Ini</p>
                 </div>
             </div>
+
+            <!-- Grafik absensi -->
+            <h2>📈 Statistik Absensi Per Bulan</h2>
+            <canvas id="chartAbsensi" style="max-height:300px;"></canvas>
 
             <h2>👥 Daftar Karyawan</h2>
             <a href="tambah-karyawan.php"><button>➕ Tambah Karyawan</button></a>
@@ -89,6 +118,46 @@ $result = $koneksi->query("SELECT * FROM users ORDER BY id ASC");
             </table>
         </div>
     </div>
+
+    <script>
+        // Grafik batang
+        const ctx = document.getElementById('chartAbsensi');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: <?= json_encode($bulan) ?>,
+                datasets: [{
+                        label: 'Hadir',
+                        data: <?= json_encode($hadir) ?>,
+                        backgroundColor: '#22c55e'
+                    },
+                    {
+                        label: 'Izin',
+                        data: <?= json_encode($izin) ?>,
+                        backgroundColor: '#facc15'
+                    },
+                    {
+                        label: 'Sakit',
+                        data: <?= json_encode($sakit) ?>,
+                        backgroundColor: '#ef4444'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>
